@@ -1,0 +1,4 @@
+This package contains base configuration for Archive Development "cloud" VMs.
+
+It is not generally used for sandboxes (local development VMs): see
+the bbcarchdev-sandbox-base package instead.
