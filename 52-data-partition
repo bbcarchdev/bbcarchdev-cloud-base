@@ -1,0 +1,23 @@
+#! /bin/sh
+
+## If /dev/vdb is present, is an ext4 partition with no disklabel and with a
+## zero mount-count, re-initialise it with the label 'data' and mount it.
+
+[ -b /dev/vdb ] || exit 0
+
+mountcount="`/sbin/dumpe2fs -h /dev/vdb 2>/dev/null | grep -e '^Mount count:' | cut -c27-`"
+# Check that there wasn't an error retrieving the filesystem information
+[ x"$mountcount" = x"" ] && exit 0
+
+# If the filesystem has previously been mounted, abort
+[ $mountcount -gt 0 ] && exit 0
+
+disklabel="`/sbin/dumpe2fs -h /dev/vdb 2>/dev/null | grep -e '^Filesystem volume name:' | cut -c27-`"
+echo "disklabel=$disklabel"
+
+# If the filesystem already has a label assigned, abort
+[ x"$disklabel" = x"<none>" ] || exit 0
+
+/sbin/mkfs.ext4 -L data /dev/vdb
+
+exec /bin/mount /data

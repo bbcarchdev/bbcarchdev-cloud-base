@@ -1,0 +1,18 @@
+#! /bin/sh
+
+# Ping the puppetmaster and trigger a fetch of our VM's metadata
+# from OpenNebula
+
+[ -z "${VMID}" ] && exit 0
+
+if ! curl -f -s -d "vmid=${VMID}" http://puppetmaster/ >/dev/null ; then
+	echo "$0: failed to update puppetmaster with VM manifest" >&2
+	exit 1
+fi
+
+if [ x`hostname -s 2>/dev/null` = x"localhost" ] ; then
+	echo "$0: hostname was not correctly set, aborting" >&2
+	exit 1
+fi
+
+/usr/sbin/invoke-rc.d puppet restart
