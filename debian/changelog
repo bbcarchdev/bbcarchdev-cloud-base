@@ -1,3 +1,9 @@
+bbcarchdev-cloud-base (4.0) stable; urgency=low
+
+  * Handle changes in hostname in interactions with puppet keys and certificates.
+
+ -- Mo McRoberts <mo.mcroberts@bbc.co.uk>  Wed, 11 Jun 2014 20:31:40 +0100
+
 bbcarchdev-cloud-base (3.1) stable; urgency=low
 
   * Fix packaging error.

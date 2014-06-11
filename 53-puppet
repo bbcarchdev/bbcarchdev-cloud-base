@@ -5,14 +5,26 @@
 
 [ -z "${VMID}" ] && exit 0
 
-if ! curl -f -s -d "vmid=${VMID}" http://puppetmaster/ >/dev/null ; then
-	echo "$0: failed to update puppetmaster with VM manifest" >&2
-	exit 1
-fi
-
 if [ x`hostname -s 2>/dev/null` = x"localhost" ] ; then
 	echo "$0: hostname was not correctly set, aborting" >&2
 	exit 1
 fi
 
+hostname=`hostname -f`
+clean=""
+
+if ! [ -r "/var/lib/puppet/ssl/private_keys/${hostname}.pem" ] ; then
+	clean="&clean=1"
+	rm -f "/var/lib/puppet/ssl/private_keys/${hostname}.pem"
+	rm -f "/var/lib/puppet/ssl/public/${hostname}.pem"
+	rm -f "/var/lib/puppet/ssl/certs/${hostname}.pem"
+	rm -f "/var/lib/puppet/ssl/certificate_requests/${hostname}.pem"
+fi
+
+if ! curl -f -s -d "vmid=${VMID}${clean}" http://puppetmaster/ >/dev/null ; then
+	echo "$0: failed to update puppetmaster with VM manifest" >&2
+	exit 1
+fi
+
 /usr/sbin/invoke-rc.d puppet restart
+
