@@ -17,7 +17,7 @@ Description: BBC Archive Development base configuration for "cloud" VMs
  .
  Note that this package depends upon packages which aren't present in the
  official Wheezy repositories: puppet and opennebula-context. See the
- documentation below to enable the Puppet and Wheezy-Backports repositories
+ documentation below to enable the Puppet and wheezy-backports repositories
  before attempting to install this package.
  .
  http://docs.puppetlabs.com/guides/install_puppet/install_debian_ubuntu.html

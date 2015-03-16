@@ -1,7 +1,20 @@
 #! /bin/sh
 
-# Ping the puppetmaster and trigger a fetch of our VM's metadata
-# from OpenNebula
+# Author: Mo McRoberts <mo.mcroberts@bbc.co.uk>
+#
+# Copyright 2014-2015 BBC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 [ -z "${VMID}" ] && exit 0
 
@@ -13,6 +26,12 @@ fi
 hostname=`hostname -f`
 clean=""
 
+## If a private key for our hostname does not already exist, include the 'clean'
+## parameter in our request to the puppetmaster, indicating that this is a
+## clean image. In the event that it's not, and we just need to re-sync for
+## some reason, tidy up any left-over instances of the key from the various
+## puppet SSL directories.
+
 if ! [ -r "/var/lib/puppet/ssl/private_keys/${hostname}.pem" ] ; then
 	clean="&clean=1"
 	rm -f "/var/lib/puppet/ssl/private_keys/${hostname}.pem"
@@ -21,10 +40,18 @@ if ! [ -r "/var/lib/puppet/ssl/private_keys/${hostname}.pem" ] ; then
 	rm -f "/var/lib/puppet/ssl/certificate_requests/${hostname}.pem"
 fi
 
+## Send a request to the puppetmaster, including our VM ID and optionally
+## the 'clean' parameter. How the puppetmaster processes this request has
+## varied over time, but it may trigger (after checking that the request
+## originates from the VM whose ID is supplied) resetting any state held
+## about the VM on the master.
+
 if ! curl -f -s -d "vmid=${VMID}${clean}" http://puppetmaster/ >/dev/null ; then
 	echo "$0: failed to update puppetmaster with VM manifest" >&2
 	exit 1
 fi
+
+## Re-start the puppet agent
 
 /usr/sbin/invoke-rc.d puppet restart
 

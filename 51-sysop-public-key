@@ -1,11 +1,8 @@
 #!/bin/bash
 
-## Install the context-provided SSH public key into the 'sysop' user's
-## authorized_keys file.
-
-## This is a (very slightly) modified version of the OpenNebula
-## 02-ssh_public_key context script.
-
+# Author: Mo McRoberts <mo.mcroberts@bbc.co.uk>
+#
+# Copyright 2014-2015 BBC
 # -------------------------------------------------------------------------- #
 # Copyright 2010-2014, C12G Labs S.L.                                        #
 #                                                                            #
@@ -21,6 +18,12 @@
 # See the License for the specific language governing permissions and        #
 # limitations under the License.                                             #
 #--------------------------------------------------------------------------- #
+
+## Install the context-provided SSH public key into the 'sysop' user's
+## authorized_keys file.
+##
+## This is a (very slightly) modified version of the OpenNebula
+## 02-ssh_public_key context script.
 
 [ -z "${SSH_PUBLIC_KEY}${EC2_PUBLIC_KEY}" ] && exit 0
 
