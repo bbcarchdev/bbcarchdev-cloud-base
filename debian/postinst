@@ -1,0 +1,6 @@
+#! /bin/sh
+
+## Remove old versions of contextualisation scripts which were mis-ordered
+
+rm -f /etc/one-context.d/54-onegate
+rm -f /etc/one-context.d/53-puppet
