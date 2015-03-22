@@ -2,6 +2,6 @@
 ../../10-restart-daemons etc/one-context.d
 ../../51-sysop-public-key etc/one-context.d
 ../../52-data-partition etc/one-context.d
-../../53-puppet etc/one-context.d
-../../54-onegate etc/one-context.d
+../../53-onegate etc/one-context.d
+../../60-puppet etc/one-context.d
 ../../onegate usr/bin
