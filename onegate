@@ -1,0 +1,94 @@
+#! /bin/sh
+
+# Author: Mo McRoberts <mo.mcroberts@bbc.co.uk>
+#
+# Copyright 2014-2015 BBC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+TOKENSTATE="/var/run/onegate-token"
+
+progname="$0"
+quiet="no"
+nofail="no"
+data=""
+
+usage() {
+	echo "Usage: $progname [OPTIONS] VAR=VALUE [VAR=VALUE...]"
+	echo ""
+	echo "OPTIONS is one or more of:"
+	echo "   -h or --help       Print this usage message and exit"
+	echo "   -q or --quiet      Don't print an error if no token is present"
+	echo "   -n or --nofail     Don't fail if no token is present"
+	echo ""
+	echo "Note that VALUE must already URL-encoded"
+}
+
+for arg ; do
+	case "$arg" in
+		-h|--help)
+			usage
+			exit 0
+			;;
+		-q|--quiet)
+			quiet=yes
+			nofail=yes
+			;;
+		-n|--nofail)
+			nofail=yes
+			;;
+		-*)
+			echo "$progname: unrecognised option '$arg'" >&2
+			usage
+			exit 1
+			;;
+		*)
+			if [ x"$data" = x"" ] ; then
+				data="$arg"
+			else
+				data="${data}&""${arg}"
+			fi
+			;;
+	esac
+done
+
+if [ -z "$data" ] ; then
+	usage
+	exit 1
+fi
+
+if ! [ -r $TOKENSTATE ] ; then
+	if [ $quiet = no ] ; then
+		if [ $nofail = no ] ; then
+			status=Error
+		else
+			status=Warning
+		fi
+		echo "$0: $status: $TOKENSTATE does not exist; no request will be sent" >&2
+	fi
+	if [ $nofail = yes ] ; then
+		exit 0
+	fi
+	exit 1
+fi
+
+. $TOKENSTATE
+
+curl -s -X "PUT" -d "$data" -H "X-ONEGATE-TOKEN: $TOKEN" -H "X-ONEGATE-VMID: $VMID" "$ONEGATE_ENDPOINT/vm"
+result=$?
+
+if [ $result -gt 0 ] ; then
+	echo "$0: Error: HTTP request to $ONEGATE_ENDPOINT failed" >&2
+	exit $result
+fi
+exit 0
