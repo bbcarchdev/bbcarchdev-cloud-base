@@ -1,4 +1,5 @@
 ../../bbcarchdev-cloud-version etc
+../../10-restart-daemons etc/one-context.d
 ../../51-sysop-public-key etc/one-context.d
 ../../52-data-partition etc/one-context.d
 ../../53-puppet etc/one-context.d
