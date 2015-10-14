@@ -10,7 +10,7 @@ Vcs-Browser: https://github.com/bbcarchdev/deb-bbcarchdev-cloud-base
 
 Package: bbcarchdev-cloud-base
 Architecture: any
-Depends: ${misc:Depends}, bbcarchdev-base, puppet, opennebula-context, host, curl
+Depends: ${misc:Depends}, bbcarchdev-base, puppet, opennebula-context, host, curl, apt-transport-https
 Description: BBC Archive Development base configuration for "cloud" VMs
  This package contains the base configuration for the BBC Archive Development
  hosts for "cloud" VMs.
