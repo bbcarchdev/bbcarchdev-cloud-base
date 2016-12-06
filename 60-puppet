@@ -32,12 +32,9 @@ clean=""
 ## some reason, tidy up any left-over instances of the key from the various
 ## puppet SSL directories.
 
-if ! [ -r "/var/lib/puppet/ssl/private_keys/${hostname}.pem" ] ; then
+if ! [ -r /var/lib/puppet-init-stamp ] ; then
 	clean="&clean=1"
-	rm -f "/var/lib/puppet/ssl/private_keys/${hostname}.pem"
-	rm -f "/var/lib/puppet/ssl/public/${hostname}.pem"
-	rm -f "/var/lib/puppet/ssl/certs/${hostname}.pem"
-	rm -f "/var/lib/puppet/ssl/certificate_requests/${hostname}.pem"
+	rm -rf /var/lib/puppet
 fi
 
 ## Send a request to the puppetmaster, including our VM ID and optionally
@@ -51,7 +48,8 @@ if ! curl -f -s -d "vmid=${VMID}${clean}" http://puppetmaster/ >/dev/null ; then
 	exit 1
 fi
 
+touch /var/lib/puppet-init-stamp
+
 ## Re-start the puppet agent
 
 /usr/sbin/invoke-rc.d puppet restart
-
